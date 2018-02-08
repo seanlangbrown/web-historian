@@ -14,16 +14,13 @@ exports.serveAssets = function(res, asset, callback) {
   // Write some code here that helps serve up your static files!
   // (Static files are things like html (yours or archived from others...),
   // css, or anything that doesn't change often.)
-};
-
-exports.sendPage = function(url, res) {
   var status = 200;
-  fs.readFile(__dirname + '/public/index.html', (err, data) => {
+  fs.readFile(asset, (err, data) => {
     if (err) {
       status = 404;
       data = '404 Error: please try again later';
     }
-    res.writeHead(status, httpHelpers.headers);
+    res.writeHead(status, exports.headers);
     res.end(data);
   });
 };

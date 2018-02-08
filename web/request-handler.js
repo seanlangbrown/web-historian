@@ -8,23 +8,13 @@ var fs = require('fs');
 
 var requestHandlers = {
   'GET': function(req, res) {
-    var status = 200;
-    res.writeHead(status, httpHelpers.headers);
-    fs.readFile(__dirname + '/public/index.html', (err, data) => {
-      if (err) { throw err; }
-      res.end(data);
-    });
+    httpHelpers.serveAssets(res, __dirname + '/public/index.html', null);
   },
   'POST': function(req, res) {
-    console.log('RECIEVED POST');
-    var status = 200;
-    res.writeHead(status, httpHelpers.headers);
-    fs.readFile(__dirname + '/public/loading.html', (err, data) => {
-      if (err) { throw err; }
-      res.end(data);
-    });
+    httpHelpers.serveAssets(res, __dirname + '/public/loading.html', null);
   },
   'OPTIONS': function(req, res) {
+    
     res.end(archive.paths.list);
     return true;
   }, 
