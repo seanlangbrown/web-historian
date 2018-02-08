@@ -54,15 +54,55 @@ exports.addUrlToList = function(url, callback3) {
 };
 
 exports.isUrlArchived = function(url, callback4) {
-  // 
-};
-
-exports.downloadUrls = function(urls) {
+  // check url against contents of archive
+  fs.stats(exports.paths.archivedSites + '/' + url, (err, stats) => {
+    if (err) {
+      throw err;
+    }
+    //callback(boolean isInArchive) 
+    callback4(stats.isFile());
+  });
   
+
 };
 
+exports.downloadUrls = function(url) {
+  //get html from url
+  
+  var file = fs.createWriteStream(exports.paths.archivedSites + '/' + url);
+  var request = http.get(url, function(response) {
+    response.pipe(file);
+  });
+  
+  /*
+  
+  http.get(url, function(html) {
+    fs.writeFile(exports.paths.archivedSites + '/' + url, html, (err) => {
+      if (err) { throw err; }
+    });
+  })
+  //write to file*/
+};
 
+exports.makeValidUrl = function(url) {
+  //if no http, add
+  //if no www, add
+  if (!url.match('^https?:\/\/www\.')) {
+    //if it doesn't start with http(s)://www.
+    //if it starts with only www, replace with http(s)://www.
+    if (url.match('^www\.')) {
+      url.replace('^www\.', 'https:\/\/www.');
+    } else if (url.match('^http')) {
+    //if it starts with only https://, replace with http(s)://www.
+      url.replace('^https?:\/\/', 'https:\/\/www.');
+    } else {
+    //if it does not start with http at this point, it has neither, add http(s)://www.
+      url = 'https:\/\/www.' + url;
+    }
+  }
+  return url;
 
+};
 
 
 

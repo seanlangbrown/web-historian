@@ -23,7 +23,8 @@ var requestHandlers = {
       archive.isUrlInList(requestedURL, (foundUrl) => {
         if (foundUrl) {
           console.log('found it!'); 
-          res.end('foundit');//httpHelpers.serveAssets(res, archive.path.archvedSites + 'url');
+          //res.end('foundit');
+          httpHelpers.serveAssets(res, archive.paths.archivedSites + '/' + requestedURL);
         } else {
           httpHelpers.serveAssets(res, __dirname + '/public/loading.html', null);
           archive.addUrlToList(requestedURL, () => {});

@@ -19,6 +19,7 @@ exports.serveAssets = function(res, asset, callback) {
     if (err) {
       status = 404;
       data = '404 Error: please try again later';
+      throw err;
     }
     res.writeHead(status, exports.headers);
     res.end(data);
