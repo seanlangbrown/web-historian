@@ -26,7 +26,7 @@ exports.initialize = function(pathsObj) {
 // modularize your code. Keep it clean!
 
 exports.readListOfUrls = function(callback1) {
-  fs.readFile(exports.paths.list, function(err, data) {
+  fs.readFile(exports.paths.list, 'utf-8',function(err, data) {
     console.log(typeof data);
     console.log(data); // data is a buffer, we need to deal with this somehow
     var dataArr = data.split('\n');
@@ -36,7 +36,9 @@ exports.readListOfUrls = function(callback1) {
 
 exports.isUrlInList = function(url, callback2) {
   exports.readListOfUrls((urlArr) => {
+    console.log('url list ', urlArr);
     var urlIsInList = urlArr.indexOf(url);
+    console.log('index ', url, ' found at ', urlIsInList);
     urlIsInList >= 0 ? urlIsInList = true : urlIsInList = false; 
     callback2(urlIsInList);
   });   
@@ -44,8 +46,9 @@ exports.isUrlInList = function(url, callback2) {
 
 exports.addUrlToList = function(url, callback3) {
   // write url to the list;
-  fs.appendFile(exports.paths.list, `${url}\n`, 'utf8', (err) => {
+  fs.appendFile(exports.paths.list, `${url}\n`, 'utf-8', (err) => {
     if (err) { throw err; }
+    console.log('added ', url, ' to archive list');
     callback3 ? callback3() : null; 
   });
 };

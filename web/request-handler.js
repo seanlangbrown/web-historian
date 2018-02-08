@@ -11,14 +11,26 @@ var requestHandlers = {
     httpHelpers.serveAssets(res, __dirname + '/public/index.html', null);
   },
   'POST': function(req, res) {
-    archive.isUrlInList(req.url, (foundUrl) => {
-      if (foundUrl) {
-        console.log('found it!'); //httpHelpers.serveAssets(res, archive.path.archvedSites + 'url');
-      } else {
-        httpHelpers.serveAssets(res, __dirname + '/public/loading.html', null);
-        archive.addUrlToList(req.url, () => {});
-      }
+    let body = [];
+    req.on('data', (chunk) => {
+      body.push(chunk);
+    }).on('end', () => {
+      body = Buffer.concat(body).toString();
+      // at this point, `body` has the entire request body stored in it as a string
+      console.log('body: ', body);
+      console.log('POST request: ', req.headers);
+      var requestedURL = body.split('=')[1];
+      archive.isUrlInList(requestedURL, (foundUrl) => {
+        if (foundUrl) {
+          console.log('found it!'); 
+          res.end('foundit');//httpHelpers.serveAssets(res, archive.path.archvedSites + 'url');
+        } else {
+          httpHelpers.serveAssets(res, __dirname + '/public/loading.html', null);
+          archive.addUrlToList(requestedURL, () => {});
+        }
+      });
     });
+    
   },
   'OPTIONS': function(req, res) {
     
