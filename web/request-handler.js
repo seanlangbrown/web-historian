@@ -11,7 +11,14 @@ var requestHandlers = {
     httpHelpers.serveAssets(res, __dirname + '/public/index.html', null);
   },
   'POST': function(req, res) {
-    httpHelpers.serveAssets(res, __dirname + '/public/loading.html', null);
+    archive.isUrlInList(req.url, (foundUrl) => {
+      if (foundUrl) {
+        console.log('found it!'); //httpHelpers.serveAssets(res, archive.path.archvedSites + 'url');
+      } else {
+        httpHelpers.serveAssets(res, __dirname + '/public/loading.html', null);
+        archive.addUrlToList(req.url, () => {});
+      }
+    });
   },
   'OPTIONS': function(req, res) {
     
