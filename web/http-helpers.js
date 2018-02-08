@@ -16,6 +16,18 @@ exports.serveAssets = function(res, asset, callback) {
   // css, or anything that doesn't change often.)
 };
 
+exports.sendPage = function(url, res) {
+  var status = 200;
+  fs.readFile(__dirname + '/public/index.html', (err, data) => {
+    if (err) {
+      status = 404;
+      data = '404 Error: please try again later';
+    }
+    res.writeHead(status, httpHelpers.headers);
+    res.end(data);
+  });
+};
+
 
 
 // As you progress, keep thinking about what helper functions you can put here!
