@@ -19,8 +19,11 @@ var requestHandlers = {
       // at this point, `body` has the entire request body stored in it as a string
       console.log('body: ', body);
       console.log('POST request: ', req.headers);
-      var requestedURL = body.split('=')[1];
+      //stuff
+      var requestedURL = archive.makeValidURL(body.split('=')[1]);
+      console.log('requested URL ', requestedURL);
       archive.isUrlInList(requestedURL, (foundUrl) => {
+        console.log('requested URL in isURLInList callback ', requestedURL);
         if (foundUrl) {
           console.log('found it!'); 
           //res.end('foundit');

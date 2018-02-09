@@ -1,7 +1,8 @@
 var fs = require('fs');
 var path = require('path');
 var _ = require('underscore');
-
+var http = require('http');
+var https = require('https');
 /*
  * You will need to reuse the same paths many times over in the course of this sprint.
  * Consider using the `paths` object below to store frequently used file paths. This way,
@@ -30,6 +31,7 @@ exports.readListOfUrls = function(callback1) {
     console.log(typeof data);
     console.log(data); // data is a buffer, we need to deal with this somehow
     var dataArr = data.split('\n');
+    console.log('urls in readlist of urls: ', dataArr);
     callback1(dataArr);
   });
 };
@@ -55,12 +57,12 @@ exports.addUrlToList = function(url, callback3) {
 
 exports.isUrlArchived = function(url, callback4) {
   // check url against contents of archive
-  fs.stats(exports.paths.archivedSites + '/' + url, (err, stats) => {
+  fs.stat(exports.paths.archivedSites + '/' + url, (err, stats) => {
     if (err) {
-      throw err;
+      //throw err;
     }
     //callback(boolean isInArchive) 
-    callback4(stats.isFile());
+    callback4(!!stats, url);
   });
   
 
@@ -68,9 +70,12 @@ exports.isUrlArchived = function(url, callback4) {
 
 exports.downloadUrls = function(url) {
   //get html from url
-  
+  console.log('url in downloadUrls: ', url);
   var file = fs.createWriteStream(exports.paths.archivedSites + '/' + url);
-  var request = http.get(url, function(response) {
+  var validUrl = exports.unEscapeURL(url);
+  //validUrl = makeValidUrl(validUrl);
+  console.log('unescaped url: ', validUrl);
+  var request = https.get(validUrl, function(response) {
     response.pipe(file);
   });
   
@@ -84,25 +89,53 @@ exports.downloadUrls = function(url) {
   //write to file*/
 };
 
-exports.makeValidUrl = function(url) {
+exports.makeValidURL = function(url) {
   //if no http, add
   //if no www, add
+  url = exports.unEscapeURL(url);
+  
   if (!url.match('^https?:\/\/www\.')) {
     //if it doesn't start with http(s)://www.
+    //console.log('one');
     //if it starts with only www, replace with http(s)://www.
     if (url.match('^www\.')) {
-      url.replace('^www\.', 'https:\/\/www.');
+      //console.log('twoA');
+      url = url.replace(/^www\./, 'https:\/\/www.');
     } else if (url.match('^http')) {
+      //console.log('twoB');
     //if it starts with only https://, replace with http(s)://www.
-      url.replace('^https?:\/\/', 'https:\/\/www.');
+      url = url.replace(/^https?:\/\//, 'https:\/\/www.');
     } else {
+      //console.log('three');
     //if it does not start with http at this point, it has neither, add http(s)://www.
-      url = 'https:\/\/www.' + url;
+      url =  'https:\/\/www.' + url;
     }
   }
+  
+  url = exports.escapeURL(url);
+  
   return url;
 
 };
+
+exports.unEscapeURL = function(url) {
+  //put in / instead of %2
+  console.log('unEscaping ', url);
+  if (url.match('\%2')) {
+    return url.replace(/\%2/g, '\/');
+  }
+  return url;
+};
+
+
+exports.escapeURL = function(url) {
+  //put in %2 instead of /
+  if (url.match('\/')) {
+    return url.replace(/\//g, '\%2'); 
+  }
+  return url;
+};
+
 
 
 
